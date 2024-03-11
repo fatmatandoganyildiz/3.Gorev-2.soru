@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div>
+      <div id="tahminDivi">
+        <h2>Sayisal Loto Oyunu</h2>
+        <p>Asagidaki inputlara tahminlerini giriniz;</p>
+        <input type="number" id="tahmin1" onkeyup="checkDuplicate(this.id)" />
+        <input type="number" id="tahmin2" onkeyup="checkDuplicate(this.id)" />
+        <input type="number" id="tahmin3" onkeyup="checkDuplicate(this.id)" />
+        <input type="number" id="tahmin4" onkeyup="checkDuplicate(this.id)" />
+        <input type="number" id="tahmin5" onkeyup="checkDuplicate(this.id)" />
+        <input type="number" id="tahmin6" onkeyup="checkDuplicate(this.id)" />
+        <button onclick="tahminEt()" id="tahminBtn">Tahmin Gir</button>
+        <br />
+        <hr />
+      </div>
+      <div id="lotoDivi">
+        <button disabled id="kuraBtn" onclick="kuraCek()">Kurayi Cek</button>
+        <p>Loto Sayilari</p>
+        <input type="number" id="loto1" />
+        <input type="number" id="loto2" />
+        <input type="number" id="loto3" />
+        <input type="number" id="loto4" />
+        <input type="number" id="loto5" />
+        <input type="number" id="loto6" />
+      </div>
+      <div id="sonuc">
+        <p id="bilinenSayilar"></p>
+        <p id="bilinenSayiAdedi"></p>
+      </div>
+    </div>
+    <script>
+      function tahminEt() {
+        // console.log("btn a basildi ");
+        let valid = true;
+        const array = [];
+        document.querySelectorAll("#tahminDivi input").forEach((input) => {
+          const tahmin = input.value.trim();
+          if (tahmin < 1 || tahmin > 49) {
+            alert("1-49 arasinda bir tahmin giriniz!");
+            valid = false;
+          } else if (isNaN(tahmin)) {
+            alert("Lutfen bir sayi giriniz!");
+            valid = false;
+          }
+          array.push(tahmin);
+        });
+
+        const newArray = array.sort(function (a, b) {
+          return a - b;
+        });
+
+        const inputs = document.querySelectorAll("#tahminDivi input");
+        for (let i = 0; i < inputs.length; i++) {
+          inputs[i].value = newArray[i];
+        }
+
+        if (valid) {
+          document.getElementById("kuraBtn").disabled = false;
+          document.getElementById("tahminBtn").disabled = true;
+        }
+      }
+
+      function checkDuplicate(id) {
+        const input = document.getElementById(id);
+        const currentValue = input.value.trim();
+        const otherInputs = Array.from(
+          document.querySelectorAll("#tahminDivi input")
+        ).filter((el) => el.id !== id);
+        let duplicateFound = false;
+        otherInputs.forEach((el) => {
+          if (el.value.trim() === currentValue) {
+            duplicateFound = true;
+            input.value = "";
+          }
+        });
+
+        if (duplicateFound) {
+          alert("Ayni tahmin bir kez girilebilir.");
+        }
+      }
+
+      function kuraCek() {
+        console.log("Kura çekiliyor...");
+        let lotoArray = [];
+        let tahminArray = [];
+        let yeniArray = [];
+
+        let lotoInputs = document.querySelectorAll("#lotoDivi input");
+
+        lotoInputs.forEach((input) => {
+          let randomValue;
+          do {
+            randomValue = Math.floor(Math.random() * 49) + 1;
+          } while (lotoArray.includes(randomValue));
+
+          lotoArray.push(randomValue);
+        });
+
+        lotoArray.sort((a, b) => a - b);
+
+        lotoInputs.forEach((input, index) => {
+          input.value = lotoArray[index];
+        });
+
+        document.querySelectorAll("#tahminDivi input").forEach((input) => {
+          tahminArray.push(input.value);
+        });
+
+        for (let i = 0; i < lotoArray.length; i++) {
+          for (let j = 0; j < tahminArray.length; j++) {
+            if (lotoArray[i] == tahminArray[j]) {
+              yeniArray.push(lotoArray[i]);
+            }
+          }
+        }
+
+        document.getElementById("sonuc").innerHTML = `
+        <p>Bilinen Sayılar: ${yeniArray}</p>
+        <p>Bilinen Sayı Adedi: ${yeniArray.length}</p>
+    `;
+      }
+    </script>
+  </body>
+</html>
